@@ -1,0 +1,34 @@
+---
+layout: default
+---
+{% assign t = site.data.translations[page.lang] %}
+{% assign status_key = "status_" | append: page.status %}
+{% assign status_label = t[status_key] %}
+<article class="prediction" itemscope itemtype="http://schema.org/Article">
+  <div class="hero">
+    <div class="hero-inner">
+      <h1 class="hero-title" itemprop="name headline">{{ page.title }}</h1>
+      <div class="hero-meta">
+        <time datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">{{ page.date | date: "%d.%m.%Y" }}</time>
+        <span itemprop="author">{{ page.author }}</span>
+      </div>
+      <div class="hero-badges">
+        <span class="prediction-status status-{{ page.status }}">{{ status_label }}</span>
+        {% if page.confidence %}<span class="hero-badge">{{ t.confidence_label }}: {{ page.confidence }}%</span>{% endif %}
+        {% if page.check_date %}<span class="hero-badge">{{ t.check_date_label }}: {{ page.check_date | date: "%d.%m.%Y" }}</span>{% endif %}
+      </div>
+    </div>
+  </div>
+  <header class="prediction-header">
+    {% if page.categories.size > 0 %}
+    <div class="prediction-categories">
+      {% for cat in page.categories %}<span class="category-tag">{{ cat }}</span>{% endfor %}
+    </div>
+    {% endif %}
+    {% assign other_lang = "en" %}{% if page.lang == "en" %}{% assign other_lang = "ru" %}{% endif %}
+    {% for post in site.posts %}{% if post.slug == page.slug and post.lang == other_lang %}<a href="{{ post.url }}" class="lang-switch">{{ t.read_in }}</a>{% break %}{% endif %}{% endfor %}
+  </header>
+  <div class="prediction-content" itemprop="articleBody">
+    {{ content }}
+  </div>
+</article>

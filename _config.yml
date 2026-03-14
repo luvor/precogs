@@ -1,0 +1,33 @@
+title: Precogs
+description: "Архив предсказаний о будущем. Predictions archive."
+url: ""
+baseurl: ""
+author: luvor
+
+theme: minima
+
+plugins:
+  - jekyll-seo-tag
+  - jekyll-feed
+
+defaults:
+  - scope:
+      path: "_posts/ru"
+    values:
+      lang: ru
+      layout: prediction
+      permalink: /ru/:year/:month/:day/:slug/
+  - scope:
+      path: "_posts/en"
+    values:
+      lang: en
+      layout: prediction
+      permalink: /en/:year/:month/:day/:slug/
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+
+sass:
+  style: compressed
