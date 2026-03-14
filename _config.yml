@@ -1,7 +1,7 @@
 title: Precogs
 description: "Архив предсказаний о будущем. Predictions archive."
-url: ""
-baseurl: ""
+url: "https://luvor.github.io"
+baseurl: "/precogs"
 author: luvor
 
 theme: minima
