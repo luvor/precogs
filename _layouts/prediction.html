@@ -26,7 +26,7 @@ layout: default
     </div>
     {% endif %}
     {% assign other_lang = "en" %}{% if page.lang == "en" %}{% assign other_lang = "ru" %}{% endif %}
-    {% for post in site.posts %}{% if post.slug == page.slug and post.lang == other_lang %}<a href="{{ post.url }}" class="lang-switch">{{ t.read_in }}</a>{% break %}{% endif %}{% endfor %}
+    {% for post in site.posts %}{% if post.slug == page.slug and post.lang == other_lang %}<a href="{{ post.url | relative_url }}" class="lang-switch">{{ t.read_in }}</a>{% break %}{% endif %}{% endfor %}
   </header>
   <div class="prediction-content" itemprop="articleBody">
     {{ content }}

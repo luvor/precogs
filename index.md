@@ -15,7 +15,7 @@ layout: default
   {% assign ru_posts = site.posts | where: "lang", "ru" %}
   {% for post in ru_posts %}
     <li class="post-item">
-      <h3 class="post-item-title"><a href="{{ post.url }}">{{ post.title }}</a></h3>
+      <h3 class="post-item-title"><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h3>
       <div class="post-item-meta">
         <time>{{ post.date | date: "%d.%m.%Y" }}</time>
         <span class="prediction-status status-{{ post.status }}">{% assign t = site.data.translations.ru %}{% assign sk = "status_" | append: post.status %}{{ t[sk] }}</span>
@@ -31,7 +31,7 @@ layout: default
   {% assign en_posts = site.posts | where: "lang", "en" %}
   {% for post in en_posts %}
     <li class="post-item">
-      <h3 class="post-item-title"><a href="{{ post.url }}">{{ post.title }}</a></h3>
+      <h3 class="post-item-title"><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h3>
       <div class="post-item-meta">
         <time>{{ post.date | date: "%d.%m.%Y" }}</time>
         <span class="prediction-status status-{{ post.status }}">{% assign t = site.data.translations.en %}{% assign sk = "status_" | append: post.status %}{{ t[sk] }}</span>
