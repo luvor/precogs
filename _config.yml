@@ -3,6 +3,7 @@ description: "Архив предсказаний о будущем. Predictions
 url: "https://luvor.github.io"
 baseurl: "/precogs"
 author: luvor
+future: true
 
 theme: minima
 
