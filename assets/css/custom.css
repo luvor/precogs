@@ -1,3 +1,9 @@
+/* ═══════════════════════════════════════════════════
+   PRECOGS — Custom Theme
+   Full-screen mobile, PWA-ready, safe-area aware
+   ═══════════════════════════════════════════════════ */
+
+/* ─── Design Tokens ─────────────────────────────── */
 :root {
   --ink: #1a1a2e;
   --ink-soft: #555770;
@@ -37,6 +43,12 @@
   --status-partial-fg: #5b21b6;
   --status-partial-bg: #f0eeff;
   --status-partial-border: #a29bfe;
+  /* Safe area fallbacks */
+  --sat: env(safe-area-inset-top, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+  color-scheme: light dark;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -75,6 +87,33 @@
   }
 }
 
+/* ─── Animations ────────────────────────────────── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 var(--status-pending-border); }
+  50%      { box-shadow: 0 0 8px 2px var(--status-pending-border); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes heroFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+
+/* ─── Base & Reset ──────────────────────────────── */
 *,
 *::before,
 *::after {
@@ -83,6 +122,11 @@
 
 html {
   overflow-x: hidden;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* Prevent pull-to-refresh on PWA */
+  overscroll-behavior-y: contain;
 }
 
 body {
@@ -91,13 +135,44 @@ body {
   background: var(--paper);
   line-height: 1.8;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  /* Touch optimizations */
+  -webkit-tap-highlight-color: transparent;
+  /* Use dynamic viewport height for full-screen on mobile */
+  min-height: 100dvh;
 }
 
+/* ─── Safe Area: Header ─────────────────────────── */
 .site-header {
   border-top: 3px solid var(--accent) !important;
   border-bottom-color: var(--border) !important;
   background: var(--paper) !important;
+  /* Safe area: extend header into notch/status bar */
+  padding-top: var(--sat) !important;
+  padding-left: max(0px, var(--sal));
+  padding-right: max(0px, var(--sar));
+  /* Sticky glass header on mobile */
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition: background 0.3s, box-shadow 0.3s, backdrop-filter 0.3s;
+}
+
+/* Scrolled state: glass effect — toggled by JS adding .is-scrolled */
+.site-header.is-scrolled {
+  background: color-mix(in srgb, var(--paper) 85%, transparent) !important;
+  backdrop-filter: saturate(180%) blur(16px);
+  -webkit-backdrop-filter: saturate(180%) blur(16px);
+  box-shadow: 0 1px 12px rgba(0,0,0,0.06);
+  border-top-color: transparent !important;
+}
+
+.site-header > .wrapper {
+  /* Ensure touch targets are large enough */
+  min-height: 44px;
+  display: flex;
+  align-items: center;
 }
 
 .site-title,
@@ -111,8 +186,67 @@ body {
 .site-nav .page-link {
   color: var(--ink-soft) !important;
   font-size: 0.9rem;
+  /* Touch target minimum 44px */
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.2s;
 }
 
+/* ─── Mobile Navigation: Full-screen Overlay ────── */
+@media screen and (max-width: 600px) {
+  .site-nav {
+    position: absolute;
+    top: 0;
+    right: max(9px, var(--sar));
+  }
+
+  .site-nav label[for="nav-trigger"] {
+    /* Larger touch target for hamburger */
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 102;
+    border-radius: var(--radius-sm);
+    transition: background 0.2s;
+  }
+
+  .site-nav label[for="nav-trigger"]:active {
+    background: var(--accent-glow);
+  }
+
+  .site-nav .trigger {
+    background: color-mix(in srgb, var(--paper) 95%, transparent);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md), 0 8px 32px rgba(0,0,0,0.08);
+    padding: 0.5rem 0;
+    /* Safe area aware */
+    padding-right: max(1rem, var(--sar));
+    /* Smooth reveal */
+    animation: fadeIn 0.15s ease-out;
+  }
+
+  .site-nav .trigger .page-link {
+    padding: 0.75rem 1.25rem;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    border-radius: var(--radius-sm);
+    transition: background 0.15s;
+  }
+
+  .site-nav .trigger .page-link:active {
+    background: var(--accent-glow);
+  }
+}
+
+/* ─── Page Content ──────────────────────────────── */
 .page-content {
   background: var(--paper);
   padding: 0 !important;
@@ -120,10 +254,11 @@ body {
 
 .page-content > .wrapper {
   max-width: var(--content-width);
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
+  padding-left: max(1.5rem, var(--sal));
+  padding-right: max(1.5rem, var(--sar));
 }
 
+/* ─── Hero ──────────────────────────────────────── */
 .hero {
   background: var(--gradient-hero);
   color: #fff;
@@ -132,6 +267,9 @@ body {
   margin-left: calc(-50vw + 50%);
   margin-right: calc(-50vw + 50%);
   padding: 4.5rem 1.5rem 4rem;
+  /* Safe areas: extend gradient into notch area */
+  padding-left: max(1.5rem, var(--sal));
+  padding-right: max(1.5rem, var(--sar));
 }
 
 .hero::before {
@@ -144,6 +282,20 @@ body {
   pointer-events: none;
 }
 
+/* Ambient floating orb — subtle depth effect */
+.hero::after {
+  content: "";
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+  top: -40px;
+  right: -60px;
+  animation: heroFloat 8s ease-in-out infinite;
+  pointer-events: none;
+}
+
 .hero-inner {
   max-width: var(--content-width);
   margin: 0 auto;
@@ -151,19 +303,21 @@ body {
 }
 
 .hero-title {
-  font-size: 2.75rem;
+  font-size: clamp(1.75rem, 5vw, 2.75rem);
   font-weight: 800;
   line-height: 1.12;
   letter-spacing: -0.03em;
   margin: 0 0 1rem;
+  animation: fadeInUp 0.6s ease-out both;
 }
 
 .hero-subtitle {
-  font-size: 1.15rem;
-  opacity: 0.9;
+  font-size: clamp(1rem, 2.5vw, 1.15rem);
+  opacity: 0;
   max-width: 32rem;
   line-height: 1.6;
   margin: 0;
+  animation: fadeIn 0.6s ease-out 0.2s forwards;
 }
 
 .hero-meta {
@@ -180,6 +334,7 @@ body {
   gap: 0.5rem;
   align-items: center;
   margin-top: 0.5rem;
+  animation: fadeInUp 0.6s ease-out 0.3s both;
 }
 
 .hero-badge {
@@ -193,6 +348,7 @@ body {
   color: #fff;
   border: 1px solid rgba(255,255,255,0.25);
   backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 .hero-center {
@@ -204,9 +360,11 @@ body {
   font-style: italic;
 }
 
+/* ─── Prediction Page ───────────────────────────── */
 .prediction {
   max-width: none;
   padding: 0 0 4rem;
+  padding-bottom: calc(4rem + var(--sab));
 }
 
 .prediction-header {
@@ -221,7 +379,19 @@ body {
   padding: 0.375rem 0.875rem;
   font-size: 0.8rem;
   font-weight: 600;
-  border-radius: var(--radius-sm);
+  border-radius: 2rem;
+  position: relative;
+  /* Pill shape for modern feel */
+  white-space: nowrap;
+}
+
+/* Status indicator dot — pulsing for pending */
+.prediction-status::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
 }
 
 .status-pending {
@@ -230,10 +400,19 @@ body {
   border: 1px solid var(--status-pending-border);
 }
 
+.status-pending::before {
+  background: var(--status-pending-fg);
+  animation: pulseGlow 2.5s ease-in-out infinite;
+}
+
 .status-confirmed {
   background: var(--status-confirmed-bg);
   color: var(--status-confirmed-fg);
   border: 1px solid var(--status-confirmed-border);
+}
+
+.status-confirmed::before {
+  background: var(--status-confirmed-fg);
 }
 
 .status-debunked {
@@ -242,10 +421,18 @@ body {
   border: 1px solid var(--status-debunked-border);
 }
 
+.status-debunked::before {
+  background: var(--status-debunked-fg);
+}
+
 .status-partially {
   background: var(--status-partial-bg);
   color: var(--status-partial-fg);
   border: 1px solid var(--status-partial-border);
+}
+
+.status-partially::before {
+  background: var(--status-partial-fg);
 }
 
 .prediction-categories {
@@ -265,6 +452,10 @@ body {
   border-radius: 2rem;
   color: var(--ink-soft);
   transition: color 0.2s, border-color 0.2s, background 0.2s;
+  /* Touch-friendly */
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
 }
 
 .category-tag:hover {
@@ -285,6 +476,8 @@ body {
   border: 1px solid var(--accent);
   border-radius: 2rem;
   transition: background 0.2s, color 0.2s;
+  /* Touch-friendly */
+  min-height: 44px;
 }
 
 .lang-switch:hover,
@@ -293,8 +486,9 @@ body {
   color: #fff;
 }
 
+/* ─── Prediction Content ────────────────────────── */
 .prediction-content {
-  font-size: 1.175rem;
+  font-size: clamp(1.05rem, 2.5vw, 1.175rem);
   line-height: 1.9;
 }
 
@@ -303,7 +497,7 @@ body {
 }
 
 .prediction-content h2 {
-  font-size: 1.625rem;
+  font-size: clamp(1.35rem, 3.5vw, 1.625rem);
   font-weight: 800;
   letter-spacing: -0.02em;
   margin: 3.5rem 0 1.25rem;
@@ -311,7 +505,7 @@ body {
 }
 
 .prediction-content h3 {
-  font-size: 1.25rem;
+  font-size: clamp(1.1rem, 3vw, 1.25rem);
   font-weight: 700;
   margin: 2.5rem 0 0.875rem;
 }
@@ -324,7 +518,7 @@ body {
   background: var(--accent-bg);
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   font-style: italic;
-  font-size: 1.15rem;
+  font-size: clamp(1rem, 2.5vw, 1.15rem);
   color: var(--ink-soft);
 }
 
@@ -344,6 +538,7 @@ body {
   background: linear-gradient(90deg, transparent, var(--border-strong), transparent);
 }
 
+/* ─── Callouts ──────────────────────────────────── */
 .callout {
   border-radius: var(--radius);
   padding: 1.5rem 1.75rem;
@@ -383,6 +578,7 @@ body {
   margin-bottom: 0;
 }
 
+/* ─── Stat Grid ─────────────────────────────────── */
 .stat-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -400,7 +596,7 @@ body {
 }
 
 .stat-number {
-  font-size: 1.75rem;
+  font-size: clamp(1.375rem, 3.5vw, 1.75rem);
   font-weight: 800;
   letter-spacing: -0.03em;
   line-height: 1.2;
@@ -417,9 +613,10 @@ body {
   line-height: 1.35;
 }
 
+/* ─── Pull Quote ────────────────────────────────── */
 .pull-quote {
   font-family: var(--serif);
-  font-size: 1.375rem;
+  font-size: clamp(1.15rem, 3vw, 1.375rem);
   font-style: italic;
   line-height: 1.55;
   color: var(--accent);
@@ -431,6 +628,7 @@ body {
   position: relative;
 }
 
+/* ─── Diagram ───────────────────────────────────── */
 .diagram {
   background: var(--paper-alt);
   border: 1px solid var(--border);
@@ -438,6 +636,9 @@ body {
   padding: 2rem;
   margin: 2.5rem 0;
   box-shadow: var(--shadow-sm);
+  /* Allow horizontal scroll on mobile for wide diagrams */
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .diagram-title {
@@ -484,6 +685,7 @@ body {
   flex-shrink: 0;
 }
 
+/* ─── Timeline ──────────────────────────────────── */
 .timeline {
   position: relative;
   padding-left: 2rem;
@@ -537,6 +739,7 @@ body {
   line-height: 1.5;
 }
 
+/* ─── Verdict ───────────────────────────────────── */
 .prediction-verdict {
   background: linear-gradient(135deg, var(--accent-bg), var(--paper-alt));
   border: 2px solid var(--accent-light);
@@ -575,8 +778,10 @@ body {
   color: var(--ink-faint);
 }
 
+/* ─── Index Page ────────────────────────────────── */
 .predictions-index {
   padding: 0 0 4rem;
+  padding-bottom: calc(4rem + var(--sab));
 }
 
 .lang-section-title {
@@ -589,6 +794,21 @@ body {
   padding-bottom: 0.625rem;
   border-bottom: 2px solid var(--accent);
   display: inline-block;
+  animation: fadeInUp 0.4s ease-out both;
+}
+
+/* Shimmer effect on the accent underline */
+.lang-section-title::after {
+  content: "";
+  display: block;
+  height: 2px;
+  margin-top: 0.625rem;
+  margin-bottom: -0.625rem;
+  background: linear-gradient(90deg, var(--accent), var(--accent-light), var(--accent));
+  background-size: 200% 100%;
+  animation: shimmer 3s linear infinite;
+  border-radius: 1px;
+  opacity: 0.5;
 }
 
 .post-list {
@@ -600,14 +820,22 @@ body {
 .post-item {
   padding: 1.75rem 0;
   border-bottom: 1px solid var(--border);
+  /* Staggered reveal animation */
+  animation: fadeInUp 0.5s ease-out both;
 }
+
+.post-item:nth-child(1) { animation-delay: 0.05s; }
+.post-item:nth-child(2) { animation-delay: 0.1s; }
+.post-item:nth-child(3) { animation-delay: 0.15s; }
+.post-item:nth-child(4) { animation-delay: 0.2s; }
+.post-item:nth-child(5) { animation-delay: 0.25s; }
 
 .post-item:last-child {
   border-bottom: none;
 }
 
 .post-item-title {
-  font-size: 1.375rem;
+  font-size: clamp(1.15rem, 3.5vw, 1.375rem);
   font-weight: 700;
   letter-spacing: -0.01em;
   margin: 0 0 0.5rem;
@@ -622,6 +850,13 @@ body {
 
 .post-item-title a:hover {
   color: var(--accent);
+}
+
+/* Active state for touch devices — brief press feedback */
+@media (hover: none) {
+  .post-item-title a:active {
+    color: var(--accent);
+  }
 }
 
 .post-item-meta {
@@ -640,12 +875,14 @@ body {
   line-height: 1.65;
 }
 
+/* ─── About Page ────────────────────────────────── */
 .about {
   padding: 0 0 4rem;
+  padding-bottom: calc(4rem + var(--sab));
 }
 
 .about-body {
-  font-size: 1.125rem;
+  font-size: clamp(1rem, 2.5vw, 1.125rem);
   line-height: 1.85;
 }
 
@@ -692,6 +929,8 @@ body {
   border-radius: var(--radius-sm);
   border: 1px solid var(--border);
   background: var(--paper-alt);
+  /* Touch-friendly */
+  min-height: 44px;
 }
 
 .status-dot {
@@ -706,10 +945,15 @@ body {
 .status-dot-debunked { background: var(--status-debunked-border); }
 .status-dot-partially { background: var(--status-partial-border); }
 
+/* ─── Footer ────────────────────────────────────── */
 .site-footer {
   border-top-color: var(--border) !important;
   background: var(--paper-alt) !important;
   color: var(--ink-soft) !important;
+  /* Safe area bottom padding */
+  padding-bottom: max(30px, var(--sab)) !important;
+  padding-left: max(0px, var(--sal));
+  padding-right: max(0px, var(--sar));
 }
 
 .footer-heading {
@@ -722,10 +966,16 @@ body {
   font-size: 0.9rem;
 }
 
+/* ─── Dark Mode ─────────────────────────────────── */
 @media (prefers-color-scheme: dark) {
   .site-header,
   .page-content {
     background: var(--paper) !important;
+  }
+
+  .site-header.is-scrolled {
+    background: color-mix(in srgb, var(--paper) 80%, transparent) !important;
+    box-shadow: 0 1px 12px rgba(0,0,0,0.2);
   }
 
   .site-footer {
@@ -741,15 +991,27 @@ body {
     -webkit-background-clip: text;
     background-clip: text;
   }
+
+  /* Card design in dark mode */
+  @media (max-width: 30rem) {
+    .post-item {
+      background: var(--paper-alt);
+      border-color: var(--border);
+      border-left-color: var(--accent);
+    }
+  }
 }
 
+/* ═══════════════════════════════════════════════════
+   RESPONSIVE — Tablet (< 48rem)
+   ═══════════════════════════════════════════════════ */
 @media (max-width: 48rem) {
   .hero-title {
-    font-size: 2rem;
+    font-size: clamp(1.75rem, 5vw, 2rem);
   }
 
   .hero {
-    padding: 3rem 1.5rem;
+    padding: 3rem max(1.5rem, var(--sar)) 2.5rem max(1.5rem, var(--sal));
   }
 
   .prediction-content {
@@ -779,9 +1041,29 @@ body {
     padding: 1.5rem 1rem;
     margin: 2rem 0;
   }
+
+  .prediction-verdict {
+    padding: 1.5rem;
+  }
+
+  .callout {
+    padding: 1.25rem;
+  }
+
+  .diagram {
+    padding: 1.25rem;
+  }
 }
 
+/* ═══════════════════════════════════════════════════
+   RESPONSIVE — Phone (< 30rem / ~480px)
+   ═══════════════════════════════════════════════════ */
 @media (max-width: 30rem) {
+  .page-content > .wrapper {
+    padding-left: max(1rem, var(--sal));
+    padding-right: max(1rem, var(--sar));
+  }
+
   .stat-grid {
     grid-template-columns: 1fr 1fr;
     gap: 0.625rem;
@@ -811,5 +1093,281 @@ body {
   .hero-badges {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  /* ─── Card-based post design on phones ─── */
+  .post-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+  }
+
+  .post-item {
+    padding: 1.125rem 1.25rem;
+    border-bottom: none;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--paper-alt);
+    box-shadow: var(--shadow-sm);
+    /* Left accent border for visual interest */
+    border-left: 3px solid var(--accent);
+    /* Tap feedback */
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .post-item:active {
+    transform: scale(0.985);
+    box-shadow: none;
+  }
+
+  .post-item:last-child {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .post-item-excerpt {
+    font-size: 0.9rem;
+    /* Limit lines on small screens for cleaner look */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .prediction-content blockquote {
+    margin-left: 0;
+    margin-right: 0;
+    padding: 1rem 1.25rem;
+  }
+
+  .about-body p:first-of-type::first-letter {
+    font-size: 2.75rem;
+  }
+
+  .prediction-verdict {
+    padding: 1.25rem;
+    margin-top: 2rem;
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   PWA STANDALONE MODE
+   When installed as app on home screen
+   ═══════════════════════════════════════════════════ */
+@media (display-mode: standalone) {
+  /* In standalone, the browser chrome is gone.
+     The site header now butts against the status bar,
+     so we add extra top padding for the safe area. */
+  .site-header {
+    /* Status bar height + safe area */
+    padding-top: max(env(safe-area-inset-top, 20px), 20px) !important;
+    /* Glass effect header in app mode — feels native */
+    border-top: none !important;
+    background: color-mix(in srgb, var(--paper) 80%, transparent) !important;
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    box-shadow: 0 0.5px 0 var(--border);
+  }
+
+  /* Prevent overscroll bounce showing white gaps */
+  html {
+    background: var(--paper);
+  }
+
+  body {
+    /* Ensure body fills the entire viewport on standalone */
+    min-height: 100dvh;
+    position: relative;
+  }
+
+  /* In app mode, hero extends further up under transparent header */
+  .hero {
+    padding-top: 3rem;
+  }
+
+  /* Tighter footer in app mode with home indicator spacing */
+  .site-footer {
+    padding-bottom: max(1.5rem, var(--sab)) !important;
+  }
+
+  /* Home indicator visual hint */
+  .site-footer::after {
+    content: "";
+    display: block;
+    width: 36px;
+    height: 4px;
+    background: var(--ink-faint);
+    border-radius: 2px;
+    opacity: 0.3;
+    margin: 1rem auto 0;
+  }
+}
+
+/* Also handle fullscreen mode */
+@media (display-mode: fullscreen) {
+  .site-header {
+    padding-top: max(env(safe-area-inset-top, 0px), 0px) !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   TOUCH DEVICE OPTIMIZATIONS
+   ═══════════════════════════════════════════════════ */
+@media (hover: none) and (pointer: coarse) {
+  /* Remove hover effects that cause sticky on touch */
+  .post-item-title a:hover {
+    color: var(--ink);
+  }
+
+  /* Make all interactive elements clearly tappable */
+  a, button, [role="button"],
+  .category-tag, .lang-switch, .hero-badge {
+    touch-action: manipulation;
+  }
+
+  /* Prevent text selection during scroll */
+  .post-list {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* Keep article content selectable */
+  .prediction-content,
+  .about-body {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+
+  /* Prevent iOS zoom on input focus */
+  input, select, textarea {
+    font-size: 16px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   REDUCED MOTION
+   ═══════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   LANDSCAPE ORIENTATION ON MOBILE
+   Phones in landscape have very little vertical space.
+   ═══════════════════════════════════════════════════ */
+@media (max-width: 48rem) and (orientation: landscape) {
+  .hero {
+    padding-top: 1.75rem;
+    padding-bottom: 1.5rem;
+    /* Side safe-area critical in landscape — notch on left/right */
+    padding-left: calc(1.5rem + var(--sal));
+    padding-right: calc(1.5rem + var(--sar));
+  }
+
+  .hero-title {
+    font-size: clamp(1.25rem, 4vw, 1.875rem);
+    margin-bottom: 0.5rem;
+  }
+
+  .hero-subtitle {
+    font-size: 0.95rem;
+  }
+
+  .hero-meta {
+    margin-bottom: 0.75rem;
+  }
+
+  .prediction-header {
+    padding-top: 1.25rem;
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   VERY SMALL PHONES (< 22rem / ~352px)
+   Galaxy A series, older iPhones, etc.
+   ═══════════════════════════════════════════════════ */
+@media (max-width: 22rem) {
+  .page-content > .wrapper {
+    padding-left: calc(0.875rem + var(--sal));
+    padding-right: calc(0.875rem + var(--sar));
+  }
+
+  .stat-number {
+    font-size: 1.25rem;
+  }
+
+  .stat-card {
+    padding: 0.875rem 0.625rem;
+  }
+
+  .prediction-categories {
+    gap: 0.25rem;
+  }
+
+  .category-tag {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   SCROLL & ANCHOR OFFSET
+   ═══════════════════════════════════════════════════ */
+
+/* Offset anchor targets below the sticky header */
+:target {
+  scroll-margin-top: calc(68px + var(--sat));
+}
+
+/* Performance: skip rendering off-screen post items.
+   Only applied beyond the first 5 (which have fade-in animations) */
+.post-item:nth-child(n+6) {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 120px;
+}
+
+/* ═══════════════════════════════════════════════════
+   FOCUS STYLES — ACCESSIBILITY
+   Since we suppressed -webkit-tap-highlight-color,
+   we must provide visible :focus-visible outlines.
+   ═══════════════════════════════════════════════════ */
+a:focus-visible,
+button:focus-visible,
+label:focus-visible,
+[role="button"]:focus-visible,
+.category-tag:focus-visible,
+.lang-switch:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+/* ═══════════════════════════════════════════════════
+   PRINT
+   ═══════════════════════════════════════════════════ */
+@media print {
+  .hero {
+    background: none !important;
+    color: var(--ink) !important;
+    padding: 1rem 0;
+    margin: 0;
+  }
+
+  .site-header,
+  .site-footer,
+  .lang-switch {
+    display: none;
+  }
+
+  .prediction-content {
+    font-size: 11pt;
+    line-height: 1.6;
   }
 }

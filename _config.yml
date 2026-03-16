@@ -25,6 +25,10 @@ defaults:
       layout: prediction
       permalink: /en/:year/:month/:day/:slug/
 
+include:
+  - manifest.webmanifest
+  - sw.js
+
 exclude:
   - Gemfile
   - Gemfile.lock

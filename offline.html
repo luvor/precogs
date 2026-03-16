@@ -1,0 +1,77 @@
+---
+layout: null
+---
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Offline — Precogs</title>
+  <style>
+    :root {
+      --accent: #6c5ce7;
+      --gradient: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 50%, #74b9ff 100%);
+      --bg: #ffffff;
+      --fg: #1a1a2e;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #13141f; --fg: #e4e5f1; }
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100dvh;
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
+    .offline {
+      text-align: center;
+      padding: 2rem;
+      max-width: 28rem;
+    }
+    .offline-icon {
+      font-size: 4rem;
+      margin-bottom: 1.5rem;
+      opacity: 0.8;
+    }
+    .offline h1 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 0.75rem;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .offline p {
+      opacity: 0.7;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+    .offline-btn {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="offline">
+    <div class="offline-icon">&#128302;</div>
+    <h1>Нет соединения</h1>
+    <p>Прекоги временно не могут заглянуть в будущее. Проверьте подключение к интернету и попробуйте снова.</p>
+    <button class="offline-btn" onclick="location.reload()">Попробовать снова</button>
+  </div>
+</body>
+</html>
