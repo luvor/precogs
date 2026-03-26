@@ -7,8 +7,7 @@
 
   <!-- PWA & Mobile App -->
   <link rel="manifest" href="{{ '/manifest.webmanifest' | relative_url }}">
-  <meta name="theme-color" content="#6c5ce7" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#13141f" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#0a0b14">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Precogs">
@@ -21,18 +20,21 @@
   <link rel="icon" type="image/png" sizes="32x32" href="{{ '/assets/icons/favicon-32.png' | relative_url }}">
   <link rel="icon" type="image/png" sizes="16x16" href="{{ '/assets/icons/favicon-16.png' | relative_url }}">
 
+  <!-- Google Fonts: Inter + JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="{{ "/assets/main.css" | relative_url }}">
-  <link rel="stylesheet" href="{{ "/assets/css/custom.css" | relative_url }}">
+  <link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}">
   {%- feed_meta -%}
 
   {%- if jekyll.environment == 'production' and site.google_analytics -%}
     {%- include google-analytics.html -%}
   {%- endif -%}
 
-  <!-- Service Worker + Mobile Enhancements -->
+  <!-- Service Worker + Interactive Enhancements -->
   <script>
-    // SW Registration
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('{{ "/sw.js" | relative_url }}', {
@@ -41,22 +43,47 @@
       });
     }
 
-    // Glass header on scroll
     document.addEventListener('DOMContentLoaded', () => {
+      // Glass header on scroll
       const header = document.querySelector('.site-header');
-      if (!header) return;
-      let ticking = false;
-      const onScroll = () => {
-        if (!ticking) {
-          requestAnimationFrame(() => {
-            header.classList.toggle('is-scrolled', window.scrollY > 10);
-            ticking = false;
+      if (header) {
+        let ticking = false;
+        const onScroll = () => {
+          if (!ticking) {
+            requestAnimationFrame(() => {
+              header.classList.toggle('is-scrolled', window.scrollY > 10);
+              ticking = false;
+            });
+            ticking = true;
+          }
+        };
+        window.addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
+      }
+
+      // Animate elements on scroll (IntersectionObserver)
+      const animatedEls = document.querySelectorAll('.animate-on-scroll');
+      if (animatedEls.length > 0 && 'IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-visible');
+              observer.unobserve(entry.target);
+            }
           });
-          ticking = true;
+        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+        animatedEls.forEach(el => observer.observe(el));
+      }
+
+      // Confidence gauge animation
+      document.querySelectorAll('.gauge-fill').forEach(el => {
+        const pct = el.dataset.percent;
+        if (pct) {
+          setTimeout(() => {
+            el.style.strokeDashoffset = 251.2 - (251.2 * pct / 100);
+          }, 300);
         }
-      };
-      window.addEventListener('scroll', onScroll, { passive: true });
-      onScroll();
+      });
     });
   </script>
 </head>

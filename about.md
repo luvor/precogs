@@ -6,7 +6,8 @@ title: About
 <div class="about">
   <div class="hero hero-center">
     <div class="hero-inner">
-      <h1 class="hero-title">Precogs</h1>
+      <div class="hero-eyebrow">About the Project</div>
+      <h1 class="hero-title"><span class="hero-title-glow">Precogs</span></h1>
       <p class="hero-subtitle">Seeing what's coming before it arrives</p>
     </div>
   </div>

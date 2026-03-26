@@ -1,0 +1,45 @@
+{% comment %}
+  SVG Confidence Gauge — circular gauge showing prediction confidence.
+  Usage: {% include svg-confidence-gauge.html percent=70 size=80 %}
+{% endcomment %}
+{% assign pct = include.percent | default: 0 %}
+{% assign sz = include.size | default: 80 %}
+{% assign r = 36 %}
+{% assign circumference = 226.2 %}
+{% assign offset = circumference | minus: 0 %}
+
+<div class="gauge-wrapper" style="width: {{ sz }}px;">
+  <svg width="{{ sz }}" height="{{ sz }}" viewBox="0 0 100 100" class="gauge-svg" aria-label="Confidence: {{ pct }}%">
+    <defs>
+      <linearGradient id="gaugeGrad-{{ pct }}" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#00f0ff"/>
+        <stop offset="50%" stop-color="#3b82f6"/>
+        <stop offset="100%" stop-color="#a855f7"/>
+      </linearGradient>
+      <filter id="gaugeGlow-{{ pct }}">
+        <feGaussianBlur stdDeviation="2" result="blur"/>
+        <feMerge>
+          <feMergeNode in="blur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+    <!-- Track -->
+    <circle cx="50" cy="50" r="{{ r }}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="6"/>
+    <!-- Fill -->
+    <circle cx="50" cy="50" r="{{ r }}"
+      fill="none"
+      stroke="url(#gaugeGrad-{{ pct }})"
+      stroke-width="6"
+      stroke-linecap="round"
+      stroke-dasharray="{{ circumference }}"
+      stroke-dashoffset="{{ circumference }}"
+      class="gauge-fill"
+      data-percent="{{ pct }}"
+      filter="url(#gaugeGlow-{{ pct }})"
+      style="transform: rotate(-90deg); transform-origin: center;"/>
+    <!-- Center text -->
+    <text x="50" y="46" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="18" font-weight="700" fill="#00f0ff">{{ pct }}</text>
+    <text x="50" y="62" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="500" fill="rgba(255,255,255,0.4)" letter-spacing="0.1em">PERCENT</text>
+  </svg>
+</div>

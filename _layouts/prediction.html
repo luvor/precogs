@@ -7,6 +7,7 @@ layout: default
 <article class="prediction" itemscope itemtype="http://schema.org/Article">
   <div class="hero">
     <div class="hero-inner">
+      <div class="hero-eyebrow">{{ t.all_predictions }}</div>
       <h1 class="hero-title" itemprop="name headline">{{ page.title }}</h1>
       <div class="hero-meta">
         <time datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">{{ page.date | date: "%d.%m.%Y" }}</time>
@@ -14,11 +15,26 @@ layout: default
       </div>
       <div class="hero-badges">
         <span class="prediction-status status-{{ page.status }}">{{ status_label }}</span>
-        {% if page.confidence %}<span class="hero-badge">{{ t.confidence_label }}: {{ page.confidence }}%</span>{% endif %}
+        {% if page.confidence %}
+        <span class="hero-badge">
+          <svg class="gauge-svg" viewBox="0 0 100 100" aria-hidden="true">
+            <defs>
+              <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#00f0ff"/>
+                <stop offset="100%" stop-color="#a855f7"/>
+              </linearGradient>
+            </defs>
+            <circle class="gauge-track" cx="50" cy="50" r="40"/>
+            <circle class="gauge-fill" cx="50" cy="50" r="40" data-percent="{{ page.confidence }}"/>
+          </svg>
+          {{ t.confidence_label }}: {{ page.confidence }}%
+        </span>
+        {% endif %}
         {% if page.check_date %}<span class="hero-badge">{{ t.check_date_label }}: {{ page.check_date | date: "%d.%m.%Y" }}</span>{% endif %}
       </div>
     </div>
   </div>
+
   <header class="prediction-header">
     {% if page.categories.size > 0 %}
     <div class="prediction-categories">
@@ -28,7 +44,14 @@ layout: default
     {% assign other_lang = "en" %}{% if page.lang == "en" %}{% assign other_lang = "ru" %}{% endif %}
     {% for post in site.posts %}{% if post.slug == page.slug and post.lang == other_lang %}<a href="{{ post.url | relative_url }}" class="lang-switch">{{ t.read_in }}</a>{% break %}{% endif %}{% endfor %}
   </header>
+
   <div class="prediction-content" itemprop="articleBody">
+    {% include cover-image.html title=page.title cover=page.cover_image status=page.status %}
+
+    {% if page.check_date %}
+    {% include svg-prediction-timeline.html start_date=page.date end_date=page.check_date status=page.status %}
+    {% endif %}
+
     {{ content }}
   </div>
 </article>

@@ -1,13 +1,26 @@
 <header class="site-header" role="banner">
-  <div class="wrapper">
-    <a class="site-title" rel="author" href="{{ "/" | relative_url }}">{{ site.title | escape }}</a>
-    {%- assign default_paths = site.pages | map: "path" -%}
-    {%- assign page_paths = site.header_pages | default: default_paths -%}
-    <nav class="site-nav-inline">
+  <div class="header-inner">
+    <a class="site-logo" href="{{ '/' | relative_url }}" aria-label="Home">
+      <svg class="logo-icon" width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+        <circle cx="14" cy="14" r="12" stroke="url(#logoGrad)" stroke-width="2" fill="none" opacity="0.6"/>
+        <circle cx="14" cy="14" r="6" fill="url(#logoGrad)" opacity="0.8"/>
+        <circle cx="14" cy="14" r="2.5" fill="#0a0b14"/>
+        <defs>
+          <linearGradient id="logoGrad" x1="0" y1="0" x2="28" y2="28">
+            <stop offset="0%" stop-color="#00f0ff"/>
+            <stop offset="100%" stop-color="#a855f7"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <span class="logo-text">{{ site.title | escape }}</span>
+    </a>
+    <nav class="site-nav" aria-label="Main navigation">
+      {%- assign default_paths = site.pages | map: "path" -%}
+      {%- assign page_paths = site.header_pages | default: default_paths -%}
       {%- for path in page_paths -%}
         {%- assign my_page = site.pages | where: "path", path | first -%}
         {%- if my_page.title -%}
-        <a class="page-link" href="{{ my_page.url | relative_url }}">{{ my_page.title | escape }}</a>
+        <a class="nav-link{% if page.url == my_page.url %} is-active{% endif %}" href="{{ my_page.url | relative_url }}">{{ my_page.title | escape }}</a>
         {%- endif -%}
       {%- endfor -%}
     </nav>

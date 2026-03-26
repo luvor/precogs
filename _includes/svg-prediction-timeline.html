@@ -1,0 +1,72 @@
+{% comment %}
+  SVG Prediction Timeline — visual timeline from prediction date to check date.
+  Usage: {% include svg-prediction-timeline.html
+           start_date=page.date
+           end_date=page.check_date
+           status=page.status %}
+{% endcomment %}
+{% assign start = include.start_date | date: "%Y" %}
+{% assign endd = include.end_date | date: "%Y" %}
+{% assign start_label = include.start_date | date: "%b %Y" %}
+{% assign end_label = include.end_date | date: "%b %Y" %}
+{% assign st = include.status | default: "pending" %}
+
+{% case st %}
+  {% when "confirmed" %}
+    {% assign clr1 = "#10b981" %}
+    {% assign clr2 = "#34d399" %}
+  {% when "debunked" %}
+    {% assign clr1 = "#ef4444" %}
+    {% assign clr2 = "#f87171" %}
+  {% when "partially" %}
+    {% assign clr1 = "#8b5cf6" %}
+    {% assign clr2 = "#a78bfa" %}
+  {% else %}
+    {% assign clr1 = "#00f0ff" %}
+    {% assign clr2 = "#a855f7" %}
+{% endcase %}
+
+<div class="prediction-timeline-svg animate-on-scroll">
+  <svg width="100%" height="80" viewBox="0 0 600 80" preserveAspectRatio="xMidYMid meet" aria-label="Prediction timeline: {{ start_label }} to {{ end_label }}">
+    <defs>
+      <linearGradient id="tlGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="{{ clr1 }}"/>
+        <stop offset="100%" stop-color="{{ clr2 }}"/>
+      </linearGradient>
+      <filter id="tlGlow">
+        <feGaussianBlur stdDeviation="3" result="blur"/>
+        <feMerge>
+          <feMergeNode in="blur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+
+    <!-- Background track -->
+    <line x1="60" y1="40" x2="540" y2="40" stroke="rgba(255,255,255,0.06)" stroke-width="3" stroke-linecap="round"/>
+
+    <!-- Progress line -->
+    <line x1="60" y1="40" x2="540" y2="40" stroke="url(#tlGrad)" stroke-width="3" stroke-linecap="round" filter="url(#tlGlow)" opacity="0.8"/>
+
+    <!-- Start node -->
+    <circle cx="60" cy="40" r="8" fill="{{ clr1 }}" filter="url(#tlGlow)"/>
+    <circle cx="60" cy="40" r="3.5" fill="#0a0b14"/>
+    <text x="60" y="18" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="11" fill="{{ clr1 }}" font-weight="600">{{ start_label }}</text>
+    <text x="60" y="68" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="9" fill="rgba(255,255,255,0.35)" letter-spacing="0.08em">PREDICTED</text>
+
+    <!-- End node -->
+    <circle cx="540" cy="40" r="8" fill="{{ clr2 }}" filter="url(#tlGlow)"/>
+    <circle cx="540" cy="40" r="3.5" fill="#0a0b14"/>
+    <text x="540" y="18" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="11" fill="{{ clr2 }}" font-weight="600">{{ end_label }}</text>
+    <text x="540" y="68" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="9" fill="rgba(255,255,255,0.35)" letter-spacing="0.08em">CHECK BY</text>
+
+    <!-- Center marker: NOW -->
+    <line x1="300" y1="28" x2="300" y2="52" stroke="rgba(255,255,255,0.15)" stroke-width="1" stroke-dasharray="3,3"/>
+    <text x="300" y="72" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="8" fill="rgba(255,255,255,0.25)" letter-spacing="0.1em">NOW</text>
+    <circle cx="300" cy="40" r="3" fill="rgba(255,255,255,0.2)"/>
+
+    <!-- Decorative tick marks -->
+    <line x1="180" y1="36" x2="180" y2="44" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <line x1="420" y1="36" x2="420" y2="44" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+  </svg>
+</div>

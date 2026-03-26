@@ -1,0 +1,18 @@
+<footer class="site-footer" role="contentinfo">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <span class="footer-logo">Precogs</span>
+      <p class="footer-tagline">Seeing what's coming before it arrives</p>
+    </div>
+    <div class="footer-links">
+      <a href="{{ '/' | relative_url }}">Home</a>
+      <a href="{{ '/about' | relative_url }}">About</a>
+      {%- if site.feed -%}
+      <a href="{{ '/feed.xml' | relative_url }}">RSS</a>
+      {%- endif -%}
+    </div>
+    <div class="footer-copy">
+      <p>&copy; {{ site.time | date: '%Y' }} {{ site.author | default: site.title }}. All predictions are opinions, not financial advice.</p>
+    </div>
+  </div>
+</footer>
