@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ page.lang | default: 'en' }}">
 {%- include head.html -%}
 <body>
   {%- include header.html -%}
@@ -9,9 +9,5 @@
   </main>
 
   {%- include footer.html -%}
-
-  <div class="bg-grid" aria-hidden="true"></div>
-  <div class="bg-glow bg-glow--1" aria-hidden="true"></div>
-  <div class="bg-glow bg-glow--2" aria-hidden="true"></div>
 </body>
 </html>

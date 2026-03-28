@@ -1,7 +1,7 @@
 {% comment %}
-  AI-Ready Cover Image placeholder.
+  Cover Image placeholder.
   If the post has `cover_image` in frontmatter, displays it.
-  Otherwise shows a generative SVG placeholder with gradient and title.
+  Otherwise shows a clean SVG placeholder with subtle pattern.
   Usage: {% include cover-image.html title=page.title cover=page.cover_image status=page.status %}
 {% endcomment %}
 {% assign cover = include.cover | default: nil %}
@@ -10,17 +10,17 @@
 
 {% case st %}
   {% when "confirmed" %}
-    {% assign c1 = "#10b981" %}
-    {% assign c2 = "#059669" %}
+    {% assign c1 = "#276749" %}
+    {% assign c2 = "#38a169" %}
   {% when "debunked" %}
-    {% assign c1 = "#ef4444" %}
-    {% assign c2 = "#dc2626" %}
+    {% assign c1 = "#9b2c2c" %}
+    {% assign c2 = "#c53030" %}
   {% when "partially" %}
-    {% assign c1 = "#8b5cf6" %}
-    {% assign c2 = "#7c3aed" %}
+    {% assign c1 = "#6b46c1" %}
+    {% assign c2 = "#805ad5" %}
   {% else %}
-    {% assign c1 = "#00f0ff" %}
-    {% assign c2 = "#a855f7" %}
+    {% assign c1 = "#2c5282" %}
+    {% assign c2 = "#4299e1" %}
 {% endcase %}
 
 <div class="cover-image-wrapper">
@@ -30,41 +30,29 @@
     <svg class="cover-image-svg" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
       <defs>
         <linearGradient id="coverGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="{{ c1 }}" stop-opacity="0.2"/>
-          <stop offset="100%" stop-color="{{ c2 }}" stop-opacity="0.05"/>
+          <stop offset="0%" stop-color="{{ c1 }}" stop-opacity="0.06"/>
+          <stop offset="100%" stop-color="{{ c2 }}" stop-opacity="0.03"/>
         </linearGradient>
-        <radialGradient id="coverOrb1" cx="20%" cy="30%" r="40%">
-          <stop offset="0%" stop-color="{{ c1 }}" stop-opacity="0.15"/>
-          <stop offset="100%" stop-color="transparent"/>
-        </radialGradient>
-        <radialGradient id="coverOrb2" cx="80%" cy="70%" r="35%">
-          <stop offset="0%" stop-color="{{ c2 }}" stop-opacity="0.12"/>
-          <stop offset="100%" stop-color="transparent"/>
-        </radialGradient>
         <pattern id="coverGrid" width="40" height="40" patternUnits="userSpaceOnUse">
-          <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="0.5"/>
+          <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(0,0,0,0.04)" stroke-width="0.5"/>
         </pattern>
       </defs>
       <!-- Background -->
-      <rect width="800" height="400" fill="#0a0b14"/>
+      <rect width="800" height="400" fill="#f2f1ee"/>
       <rect width="800" height="400" fill="url(#coverGrad)"/>
       <rect width="800" height="400" fill="url(#coverGrid)"/>
-      <!-- Ambient orbs -->
-      <ellipse cx="160" cy="120" rx="200" ry="150" fill="url(#coverOrb1)"/>
-      <ellipse cx="640" cy="280" rx="180" ry="140" fill="url(#coverOrb2)"/>
-      <!-- Decorative elements -->
-      <circle cx="200" cy="200" r="60" fill="none" stroke="{{ c1 }}" stroke-width="0.5" opacity="0.15"/>
-      <circle cx="200" cy="200" r="90" fill="none" stroke="{{ c1 }}" stroke-width="0.3" opacity="0.08"/>
-      <circle cx="600" cy="180" r="40" fill="none" stroke="{{ c2 }}" stroke-width="0.5" opacity="0.12"/>
-      <!-- Scan lines -->
-      <line x1="0" y1="130" x2="800" y2="130" stroke="rgba(255,255,255,0.02)" stroke-width="1"/>
-      <line x1="0" y1="270" x2="800" y2="270" stroke="rgba(255,255,255,0.02)" stroke-width="1"/>
-      <!-- Floating data points -->
-      <circle cx="150" cy="100" r="2" fill="{{ c1 }}" opacity="0.4"/>
-      <circle cx="350" cy="80" r="1.5" fill="{{ c2 }}" opacity="0.3"/>
-      <circle cx="500" cy="320" r="2" fill="{{ c1 }}" opacity="0.35"/>
-      <circle cx="680" cy="150" r="1.5" fill="{{ c2 }}" opacity="0.25"/>
-      <circle cx="100" cy="300" r="1" fill="{{ c1 }}" opacity="0.2"/>
+      <!-- Subtle geometric accents -->
+      <circle cx="160" cy="200" r="80" fill="none" stroke="{{ c1 }}" stroke-width="0.5" opacity="0.12"/>
+      <circle cx="160" cy="200" r="120" fill="none" stroke="{{ c1 }}" stroke-width="0.3" opacity="0.06"/>
+      <circle cx="640" cy="200" r="60" fill="none" stroke="{{ c2 }}" stroke-width="0.5" opacity="0.1"/>
+      <!-- Horizontal rule lines -->
+      <line x1="100" y1="160" x2="700" y2="160" stroke="rgba(0,0,0,0.03)" stroke-width="1"/>
+      <line x1="100" y1="240" x2="700" y2="240" stroke="rgba(0,0,0,0.03)" stroke-width="1"/>
+      <!-- Data points -->
+      <circle cx="200" cy="180" r="2" fill="{{ c1 }}" opacity="0.2"/>
+      <circle cx="400" cy="160" r="1.5" fill="{{ c2 }}" opacity="0.15"/>
+      <circle cx="550" cy="240" r="2" fill="{{ c1 }}" opacity="0.18"/>
+      <circle cx="350" cy="220" r="1.5" fill="{{ c2 }}" opacity="0.12"/>
     </svg>
   {% endif %}
 </div>

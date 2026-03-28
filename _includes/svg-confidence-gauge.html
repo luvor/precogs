@@ -4,28 +4,20 @@
 {% endcomment %}
 {% assign pct = include.percent | default: 0 %}
 {% assign sz = include.size | default: 80 %}
-{% assign r = 36 %}
-{% assign circumference = 226.2 %}
+{% assign r = 40 %}
+{% assign circumference = 251.2 %}
 {% assign offset = circumference | minus: 0 %}
 
 <div class="gauge-wrapper" style="width: {{ sz }}px;">
   <svg width="{{ sz }}" height="{{ sz }}" viewBox="0 0 100 100" class="gauge-svg" aria-label="Confidence: {{ pct }}%">
     <defs>
       <linearGradient id="gaugeGrad-{{ pct }}" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="#00f0ff"/>
-        <stop offset="50%" stop-color="#3b82f6"/>
-        <stop offset="100%" stop-color="#a855f7"/>
+        <stop offset="0%" stop-color="#2c5282"/>
+        <stop offset="100%" stop-color="#2b6cb0"/>
       </linearGradient>
-      <filter id="gaugeGlow-{{ pct }}">
-        <feGaussianBlur stdDeviation="2" result="blur"/>
-        <feMerge>
-          <feMergeNode in="blur"/>
-          <feMergeNode in="SourceGraphic"/>
-        </feMerge>
-      </filter>
     </defs>
     <!-- Track -->
-    <circle cx="50" cy="50" r="{{ r }}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="6"/>
+    <circle cx="50" cy="50" r="{{ r }}" fill="none" stroke="#d8d6d0" stroke-width="6"/>
     <!-- Fill -->
     <circle cx="50" cy="50" r="{{ r }}"
       fill="none"
@@ -36,10 +28,9 @@
       stroke-dashoffset="{{ circumference }}"
       class="gauge-fill"
       data-percent="{{ pct }}"
-      filter="url(#gaugeGlow-{{ pct }})"
       style="transform: rotate(-90deg); transform-origin: center;"/>
     <!-- Center text -->
-    <text x="50" y="46" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="18" font-weight="700" fill="#00f0ff">{{ pct }}</text>
-    <text x="50" y="62" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="500" fill="rgba(255,255,255,0.4)" letter-spacing="0.1em">PERCENT</text>
+    <text x="50" y="46" text-anchor="middle" font-family="'Playfair Display', Georgia, serif" font-size="18" font-weight="700" fill="#2c5282">{{ pct }}</text>
+    <text x="50" y="62" text-anchor="middle" font-family="'Inter', sans-serif" font-size="8" font-weight="500" fill="#8a8a96" letter-spacing="0.1em">PERCENT</text>
   </svg>
 </div>

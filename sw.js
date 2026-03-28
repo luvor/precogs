@@ -7,8 +7,7 @@ const BASE_URL = '{{ site.baseurl }}';
 const PRECACHE_URLS = [
   `${BASE_URL}/`,
   `${BASE_URL}/about`,
-  `${BASE_URL}/assets/main.css`,
-  `${BASE_URL}/assets/css/custom.css`,
+  `${BASE_URL}/assets/css/main.css`,
   `${BASE_URL}/assets/icons/icon.svg`,
   `${BASE_URL}/offline.html`
 ];
